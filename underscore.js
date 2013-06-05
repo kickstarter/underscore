@@ -1251,7 +1251,7 @@
     if (base10Entity !== entity) { 
       unescapeMap[base10Entity] = char); 
     }
-  }, {});
+  });
 
   // Functions for escaping and unescaping strings to/from HTML interpolation.
   var createEscaper = function(map) {

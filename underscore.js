@@ -1231,7 +1231,7 @@
     return new Date().getTime();
   };
 
-   // List of HTML entities for escaping.
+  // List of HTML entities for escaping.
   var escapeMap = {
     '&': '&amp;',
     '<': '&lt;',
@@ -1241,6 +1241,17 @@
     '`': '&#x60;'
   };
   var unescapeMap = _.invert(escapeMap);
+
+  // Extend the unescape values to include base-10 representations
+  _.each(escapeMap, function(entity, char) {
+    var base10Entity = entity.replace(/\#x([0-9a-f]+)/i, function (m, _1){
+      if (m) { return '#' + parseInt(_1, 16); }
+    });
+    
+    if (base10Entity !== entity) { 
+      unescapeMap[base10Entity] = char); 
+    }
+  }, {});
 
   // Functions for escaping and unescaping strings to/from HTML interpolation.
   var createEscaper = function(map) {

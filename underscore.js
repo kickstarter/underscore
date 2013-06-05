@@ -1064,6 +1064,17 @@
   };
   entityMap.unescape = _.invert(entityMap.escape);
 
+  // Extend the unescape values to include base-10 representations
+  _.each(entityMap.escape, function(entity, char) {
+    var base10Entity = entity.replace(/\#x([0-9a-f]+)/i, function (m, _1){
+      if (m) { return '#' + parseInt(_1, 16); }
+    });
+    
+    if (base10Entity !== entity) { 
+      entityMap.unescape[base10Entity] = char); 
+    }
+  }, {});
+
   // Regexes containing the keys and values listed immediately above.
   var entityRegexes = {
     escape:   new RegExp('[' + _.keys(entityMap.escape).join('') + ']', 'g'),

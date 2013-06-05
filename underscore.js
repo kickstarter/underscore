@@ -1073,7 +1073,7 @@
     if (base10Entity !== entity) { 
       entityMap.unescape[base10Entity] = char); 
     }
-  }, {});
+  });
 
   // Regexes containing the keys and values listed immediately above.
   var entityRegexes = {

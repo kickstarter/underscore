@@ -65,6 +65,8 @@ $(document).ready(function() {
     deepEqual(_.flatten(list, true), [1,2,3,[[[4]]]], 'can shallowly flatten nested arrays');
     var result = (function(){ return _.flatten(arguments); })(1, [2], [3, [[[4]]]]);
     deepEqual(result, [1,2,3,4], 'works on an arguments object');
+    list = [[1], [2], [3], [[4]]];
+    deepEqual(_.flatten(list, true), [1, 2, 3, [4]], 'can shallowly flatten arrays containing only other arrays');
   });
 
   test("without", function() {
@@ -105,6 +107,8 @@ $(document).ready(function() {
     equal(_(stooges).intersection(leaders).join(''), 'moe', 'can perform an OO-style intersection');
     var result = (function(){ return _.intersection(arguments, leaders); })('moe', 'curly', 'larry');
     equal(result.join(''), 'moe', 'works on an arguments object');
+    var theSixStooges = ['moe', 'moe', 'curly', 'curly', 'larry', 'larry'];
+    equal(_.intersection(theSixStooges, leaders).join(''), 'moe', 'returns a duplicate-free array');
   });
 
   test("union", function() {
@@ -118,6 +122,9 @@ $(document).ready(function() {
     (function(){ args = arguments; })(1, 2, 3);
     result = _.union(args, [2, 30, 1], [1, 40]);
     equal(result.join(' '), '1 2 3 30 40', 'takes the union of a list of arrays');
+
+    result = _.union(null, [1, 2, 3]);
+    deepEqual(result, [null, 1, 2, 3]);
   });
 
   test("difference", function() {
@@ -132,21 +139,17 @@ $(document).ready(function() {
     var names = ['moe', 'larry', 'curly'], ages = [30, 40, 50], leaders = [true];
     var stooges = _.zip(names, ages, leaders);
     equal(String(stooges), 'moe,30,true,larry,40,,curly,50,', 'zipped together arrays of different lengths');
-  });
 
-  test('unzip', function() {
-    var stoogesZipped = [['moe',30, 'stooge 1'],['larry',40, 'stooge 2'],['curly',50, 'stooge 3']];
-    var stoogesUnzipped = _.unzip(stoogesZipped);
-    deepEqual(stoogesUnzipped, [['moe','larry','curly'],[30,40,50], ['stooge 1', 'stooge 2', 'stooge 3']], 'unzipped pairs');
+    stooges = _.zip(['moe',30, 'stooge 1'],['larry',40, 'stooge 2'],['curly',50, 'stooge 3']);
+    deepEqual(stooges, [['moe','larry','curly'],[30,40,50], ['stooge 1', 'stooge 2', 'stooge 3']], 'zipped pairs');
 
     // In the case of difference lengths of the tuples undefineds
     // should be used as placeholder
-    stoogesZipped = [['moe',30],['larry',40],['curly',50, 'extra data']];
-    stoogesUnzipped = _.unzip(stoogesZipped);
-    deepEqual(stoogesUnzipped, [['moe','larry','curly'],[30,40,50], [undefined, undefined, 'extra data']], 'unzipped pairs');
+    stooges = _.zip(['moe',30],['larry',40],['curly',50, 'extra data']);
+    deepEqual(stooges, [['moe','larry','curly'],[30,40,50], [undefined, undefined, 'extra data']], 'zipped pairs with empties');
 
-    var emptyUnzipped = _.unzip([]);
-    deepEqual(emptyUnzipped, [], 'unzipped empty');
+    var empty = _.zip([]);
+    deepEqual(empty, [], 'unzipped empty');
   });
 
   test('object', function() {

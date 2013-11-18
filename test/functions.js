@@ -142,17 +142,31 @@ $(document).ready(function() {
     _.delay(function(){ equal(counter, 2, "incr was called twice"); start(); }, 64);
   });
 
+  asyncTest("more throttling", 3, function() {
+    var counter = 0;
+    var incr = function(){ counter++; };
+    var throttledIncr = _.throttle(incr, 30);
+    throttledIncr(); throttledIncr();
+    ok(counter == 1);
+    _.delay(function(){
+      ok(counter == 2);
+      throttledIncr();
+      ok(counter == 3);
+      start();
+    }, 85);
+  });
+
   asyncTest("throttle repeatedly with results", 6, function() {
     var counter = 0;
     var incr = function(){ return ++counter; };
-    var throttledIncr = _.throttle(incr, 64);
+    var throttledIncr = _.throttle(incr, 100);
     var results = [];
     var saveResult = function() { results.push(throttledIncr()); };
     saveResult(); saveResult();
-    _.delay(saveResult, 32);
-    _.delay(saveResult, 80);
-    _.delay(saveResult, 96);
-    _.delay(saveResult, 144);
+    _.delay(saveResult, 50);
+    _.delay(saveResult, 150);
+    _.delay(saveResult, 160);
+    _.delay(saveResult, 230);
     _.delay(function() {
       equal(results[0], 1, "incr was called once");
       equal(results[1], 1, "incr was throttled");
@@ -161,7 +175,7 @@ $(document).ready(function() {
       equal(results[4], 2, "incr was throttled");
       equal(results[5], 3, "incr was called trailing");
       start();
-    }, 192);
+    }, 300);
   });
 
   asyncTest("throttle triggers trailing call when invoked repeatedly", 2, function() {
@@ -183,17 +197,74 @@ $(document).ready(function() {
     }, 96);
   });
 
-  asyncTest("throttle does not trigger leading call when immediate is set to false", 2, function() {
+  asyncTest("throttle does not trigger leading call when leading is set to false", 2, function() {
     var counter = 0;
     var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 60, false);
+    var throttledIncr = _.throttle(incr, 60, {leading: false});
 
     throttledIncr(); throttledIncr();
-    ok(counter == 0);
+    ok(counter === 0);
 
     _.delay(function() {
       ok(counter == 1);
       start();
+    }, 96);
+  });
+
+  asyncTest("more throttle does not trigger leading call when leading is set to false", 3, function() {
+    var counter = 0;
+    var incr = function(){ counter++; };
+    var throttledIncr = _.throttle(incr, 100, {leading: false});
+
+    throttledIncr();
+    _.delay(throttledIncr, 50);
+    _.delay(throttledIncr, 60);
+    _.delay(throttledIncr, 200);
+    ok(counter === 0);
+
+    _.delay(function() {
+      ok(counter == 1);
+    }, 250);
+
+    _.delay(function() {
+      ok(counter == 2);
+      start();
+    }, 350);
+  });
+
+  asyncTest("one more throttle with leading: false test", 2, function() {
+    var counter = 0;
+    var incr = function(){ counter++; };
+    var throttledIncr = _.throttle(incr, 100, {leading: false});
+
+    var time = new Date;
+    while (new Date - time < 350) throttledIncr();
+    ok(counter <= 3);
+
+    _.delay(function() {
+      ok(counter <= 4);
+      start();
+    }, 200);
+  });
+
+  asyncTest("throttle does not trigger trailing call when trailing is set to false", 4, function() {
+    var counter = 0;
+    var incr = function(){ counter++; };
+    var throttledIncr = _.throttle(incr, 60, {trailing: false});
+
+    throttledIncr(); throttledIncr(); throttledIncr();
+    ok(counter === 1);
+
+    _.delay(function() {
+      ok(counter == 1);
+
+      throttledIncr(); throttledIncr();
+      ok(counter == 2);
+
+      _.delay(function() {
+        ok(counter == 2);
+        start();
+      }, 96);
     }, 96);
   });
 
@@ -287,7 +358,8 @@ $(document).ready(function() {
 
     equal(testAfter(5, 5), 1, "after(N) should fire after being called N times");
     equal(testAfter(5, 4), 0, "after(N) should not fire unless called N times");
-    equal(testAfter(0, 0), 1, "after(0) should fire immediately");
+    equal(testAfter(0, 0), 0, "after(0) should not fire immediately");
+    equal(testAfter(0, 1), 1, "after(0) should fire when first invoked");
   });
 
 });

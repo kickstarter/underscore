@@ -1252,6 +1252,17 @@
       unescapeMap[base10Entity] = char); 
     }
   });
+=======
+      entityMap.unescape[base10Entity] = char); 
+    }
+  });
+
+  // Regexes containing the keys and values listed immediately above.
+  var entityRegexes = {
+    escape:   new RegExp('[' + _.keys(entityMap.escape).join('') + ']', 'g'),
+    unescape: new RegExp('(' + _.keys(entityMap.unescape).join('|') + ')', 'g')
+  };
+>>>>>>> 49cec571295a3a5a940b361df8dab5d165b594a9
 
   // Functions for escaping and unescaping strings to/from HTML interpolation.
   var createEscaper = function(map) {

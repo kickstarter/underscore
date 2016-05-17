@@ -162,7 +162,7 @@
       "`": '&#96;'
     };
     _.each(base10Entities, function(entity, character) {
-      assert.equal(_.unescape(entity), character, 'escape base10 html entities');
+      assert.equal(_.unescape(entity), character, 'unescape base10 html entities');
     });
   });
 

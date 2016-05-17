@@ -156,6 +156,14 @@
     assert.equal(_.unescape(null), '');
     assert.equal(_.unescape(_.escape(string)), string);
     assert.equal(_.unescape(string), string, 'don\'t unescape unnecessarily');
+
+    var base10Entities = {
+      "'": '&#39;',
+      "`": '&#96;'
+    };
+    _.each(base10Entities, function(entity, character) {
+      assert.equal(_.unescape(entity), character, 'escape base10 html entities');
+    });
   });
 
   // Don't care what they escape them to just that they're escaped and can be unescaped
